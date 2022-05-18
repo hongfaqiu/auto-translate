@@ -1,0 +1,19 @@
+{
+  "name": "auto_translate",
+  "version": "0.1",
+  "description": "auto translate",
+  "author": "hongfaqiu",
+  "license": "MIT",
+  "scripts": {
+    "translate": "ts-node-esm ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.34",
+    "ts-node": "^10.7.0",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@vitalets/google-translate-api": "^8.0.0"
+  }
+}

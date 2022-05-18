@@ -1,0 +1,15 @@
+export default {
+  'map.layer.add': '添加',
+  'map.layer.remove': '移除',
+  'map.layer.success': '成功',
+  'map.layer.failed': '失败',
+  'map.layer.empty': '空图层',
+  'map.layer.cantFindLayer': '未找到图层',
+  'map.layer.noMethod': '缺少method参数!',
+  'map.layer.repeatAdd': '不要重复添加',
+  'map.layer.noLayerRemove': '没有图层可以清除',
+  'map.layer.successRemove': '成功清除了',
+  'map.layer.layers': '个图层',
+  'map.layer.has': '有',
+  'map.layer.layersCantRemove': '个图层未清除',
+}
