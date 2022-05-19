@@ -48,6 +48,8 @@ const execFun = async () => {
       res.map(item => {
         result = [...result, ...item]
       })
+      console.log(`>>>>>>正在尝试翻译为${ Object.keys(config.outPutFolder).length }种目标语言，如果翻译失败，请重新执行`)
+      console.log(`>>>>>>报302错误请换IP`)
       Object.entries(config.outPutFolder).map(([lang, path]) => {
         convertLang(result, {
           targetLang: lang as any,

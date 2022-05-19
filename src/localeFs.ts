@@ -74,7 +74,7 @@ export const writeToFilePath = (info: {}, output: string) => {
     const dir = file.substring(0, file.lastIndexOf('\\') + 1)
     mkdirsSync(dir)
     const str = `export default${JSON.stringify(info)}`
-    const result = str.replace(/\",/g, "\",\n   ").replace(/\":\"/g, "\": \"").replace(/t{/g, "t {\n   ").replace(/\"}/g, "\"\n}");
+    const result = str.replace(/\",/g, "\",\n  ").replace(/\":\"/g, "\": \"").replace(/t{/g, "t {\n  ").replace(/\"}/g, "\"\n}");
     // 异步写入数据到文件
     fs.writeFile(file, result, {
       encoding: 'utf8'
