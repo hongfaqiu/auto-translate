@@ -10,4 +10,9 @@ export interface TranslateConfig {
   suffix: string;
 }
 
-export type Dict = Record<string, string>[]
+export type DictItem = {
+  key: string;
+  value: string;
+}
+
+export type Dict = DictItem[]

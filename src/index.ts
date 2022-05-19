@@ -2,17 +2,16 @@ import { getFileContent, writeToFilePath, } from './localeFs';
 import { getProjectAllTSXFile } from './folder';
 import translate from '@vitalets/google-translate-api';
 import config from '../transConfig'
-import { Languages, Dict } from './typings';
+import { Languages, Dict, DictItem } from './typings';
 
-const convertLang = (taskArray: any[], options: {
+const convertLang = (taskArray: Dict, options: {
   from?: string;
   targetLang: Languages;
   path: string;
 }) => {
   const { from, targetLang, path } = options;
   const promiseArray = taskArray.map((item, index) => {
-    return doTranslate(item.data, {
-      translateChart: item.chart,
+    return doTranslate(item, {
       from,
       to: targetLang
     });
@@ -20,7 +19,9 @@ const convertLang = (taskArray: any[], options: {
   return Promise.all(promiseArray).then(transRes => {
     let outPutFileArrayResult: any[] = [];
     transRes.forEach(item => {
-      outPutFileArrayResult = [...outPutFileArrayResult, ...item]
+      outPutFileArrayResult = [...outPutFileArrayResult, {
+        [item.key]: item.value
+      }]
     })
     let outPutFileObjectResult = {};
     outPutFileArrayResult.forEach(item => {
@@ -43,71 +44,38 @@ const execFun = async () => {
   // 读取所有的文件，生成一个对象，并写入文件
   Promise.all(promiseArray)
     .then(async (res) => {
-      const result = res.reduce(function (total, curr) {
-        return total.concat(curr)
-      }, []);
-      const taskArray = getPartTransFun(result);
-      for (let lang in config.outPutFolder) {
-        await convertLang([...taskArray], {
+      let result: Dict = [];
+      res.map(item => {
+        result = [...result, ...item]
+      })
+      Object.entries(config.outPutFolder).map(([lang, path]) => {
+        convertLang(result, {
           targetLang: lang as any,
           from: config.from,
-          path: config.outPutFolder[lang]
+          path
         })
-      }
+      })
       
     })
     .catch((err) => {
-      // console.log(err);
+      console.log(err);
     });
 }
 
-
-const getPartTransFun = (array: Dict) => {
-  let currentArray: Dict = [];
-  let translateChart = ""
-  let promiseTaskArray: { data: Dict; chart: string; }[] = [];
-  try {
-    array.forEach(item => {
-      if (translateChart.length >= 100) {
-        translateChart = translateChart + '|' + item[Object.getOwnPropertyNames(item)[0]];
-        currentArray.push(item);
-        promiseTaskArray.push({
-          data: currentArray,
-          chart: translateChart
-        })
-        currentArray = [];
-        translateChart = "";
-      } else {
-        translateChart = translateChart + '|' + item[Object.getOwnPropertyNames(item)[0]];
-        currentArray.push(item)
-      }
-    })
-    return promiseTaskArray;
-  } catch (e) {
-    return []
-  }
-}
-
 // 获取翻译结果
-const doTranslate = (partArray: string[], options: {
-  translateChart: string;
-} & translate.IOptions) => {
-  const { translateChart, from, to} = options;
-  return new Promise<string[]>(resolve => {
-    translate(translateChart, {
+const doTranslate = (obj: DictItem, options: translate.IOptions) => {
+  const { from, to} = options;
+  return new Promise<DictItem>(resolve => {
+    translate(obj.value, {
       from,
       to,
       tld: 'cn'
     }).then(res => {
-      const data = res.text.split('|').filter(item => {
-        return item
+      const data = res.text
+      resolve({
+        key: obj.key,
+        value: data
       });
-      const array = partArray.map((item, index) => {
-        const format = item;
-        format[Object.getOwnPropertyNames(format)[0]] = data[index]?.trim();
-        return format;
-      })
-      resolve(array);
     })
   })
 }

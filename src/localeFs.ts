@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { TranslateConfig } from './typings';
+import { Dict, TranslateConfig } from './typings';
 
 /**
  * 删除文件夹下所有文件及将文件夹下所有文件清空-同步方法
@@ -73,7 +73,7 @@ export const writeToFilePath = (info: {}, output: string) => {
     const file = path.resolve(output);
     const dir = file.substring(0, file.lastIndexOf('\\') + 1)
     mkdirsSync(dir)
-    const str = `\nexport default${JSON.stringify(info)}`
+    const str = `export default${JSON.stringify(info)}`
     const result = str.replace(/\",/g, "\",\n   ").replace(/\":\"/g, "\": \"").replace(/t{/g, "t {\n   ").replace(/\"}/g, "\"\n}");
     // 异步写入数据到文件
     fs.writeFile(file, result, {
@@ -90,8 +90,8 @@ export const writeToFilePath = (info: {}, output: string) => {
 
 // 根据路径获取文件内容，识别文件内容
 export const getFileContent = (path: fs.PathLike, config: TranslateConfig) => {
-  return new Promise<Record<string, string>[]>((resolve, reject) => {
-    const result: Record<string, string>[] | PromiseLike<Record<string, string>[]> = [];
+  return new Promise<Dict>((resolve, reject) => {
+    const result: Dict | PromiseLike<Dict> = [];
     const buf = Buffer.alloc(102400000);
     fs.open(path, 'r+', function (err, fd) {
       if (err) {
@@ -115,9 +115,9 @@ export const getFileContent = (path: fs.PathLike, config: TranslateConfig) => {
                 const key = ObjStr[0] ? ObjStr[0].replace(reg, '').trim() : '';
                 const value = ObjStr[1] ? ObjStr[1].replace(reg, '').replace(breakReg, '').replace(breakReg2, '').replace(',', '').trim() : '';
                 if (key && value) {
-                  const obj = {};
-                  obj[key] = value;
-                  result.push(obj);
+                  result.push({
+                    key, value
+                  });
                 }
               })
             }
