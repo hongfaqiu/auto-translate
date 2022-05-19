@@ -9,7 +9,8 @@ export function promisify(fn: any): (path: fs.PathLike) => Promise<any> {
   return function () {
     const args = arguments;
     return new Promise(function (resolve, reject) {
-      [].push.call(args, function (err, result) {
+      // @ts-ignore
+      [].push.call(args, function (err: any, result: any) {
         if (err) {
           console.log(err)
           reject(err);
@@ -24,7 +25,7 @@ export function promisify(fn: any): (path: fs.PathLike) => Promise<any> {
 
 export function readDirRecur(file: string, suffix: string, callback: { (filePath: string): void; (arg0: string): any; }) {
   return readdir(file).then((files) => {
-    files = files.map((item) => {
+    files = files.map((item: string | string[]) => {
       const fullPath = file + '/' + item;
       return stat(fullPath).then((stats) => {
         if (stats.isDirectory()) {
@@ -34,6 +35,7 @@ export function readDirRecur(file: string, suffix: string, callback: { (filePath
             callback && callback(fullPath)
           }
         }
+        return []
       })
     });
     return Promise.all(files);

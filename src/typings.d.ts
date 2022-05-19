@@ -9,3 +9,5 @@ export interface TranslateConfig {
 };
   suffix: string;
 }
+
+export type Dict = Record<string, string>[]

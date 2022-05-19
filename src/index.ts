@@ -2,7 +2,7 @@ import { getFileContent, writeToFilePath, } from './localeFs';
 import { getProjectAllTSXFile } from './folder';
 import translate from '@vitalets/google-translate-api';
 import config from '../transConfig'
-import { Languages } from './typings';
+import { Languages, Dict } from './typings';
 
 const convertLang = (taskArray: any[], options: {
   from?: string;
@@ -18,7 +18,7 @@ const convertLang = (taskArray: any[], options: {
     });
   })
   return Promise.all(promiseArray).then(transRes => {
-    let outPutFileArrayResult = [];
+    let outPutFileArrayResult: any[] = [];
     transRes.forEach(item => {
       outPutFileArrayResult = [...outPutFileArrayResult, ...item]
     })
@@ -62,10 +62,10 @@ const execFun = async () => {
 }
 
 
-const getPartTransFun = (array) => {
-  let currentArray = [];
+const getPartTransFun = (array: Dict) => {
+  let currentArray: Dict = [];
   let translateChart = ""
-  let promiseTaskArray = [];
+  let promiseTaskArray: { data: Dict; chart: string; }[] = [];
   try {
     array.forEach(item => {
       if (translateChart.length >= 100) {
@@ -89,7 +89,7 @@ const getPartTransFun = (array) => {
 }
 
 // 获取翻译结果
-const doTranslate = (partArray: string[], options?: {
+const doTranslate = (partArray: string[], options: {
   translateChart: string;
 } & translate.IOptions) => {
   const { translateChart, from, to} = options;

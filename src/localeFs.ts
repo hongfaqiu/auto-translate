@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { TranslateConfig } from './typings';
 
 /**
  * 删除文件夹下所有文件及将文件夹下所有文件清空-同步方法
  * @param {*} path
  */
- function emptyDir(path) {
+ function emptyDir(path: fs.PathLike) {
   const files = fs.readdirSync(path);
   files.forEach(file => {
       const filePath = `${path}/${file}`;
@@ -23,7 +24,7 @@ import path from 'path';
 * 删除指定路径下的所有空文件夹-同步方法
 * @param {*} path
 */
-function rmEmptyDir(path, level=0) {
+function rmEmptyDir(path: fs.PathLike, level=0) {
   const files = fs.readdirSync(path);
   if (files.length > 0) {
       let tempFile = 0;
@@ -44,7 +45,7 @@ function rmEmptyDir(path, level=0) {
 * 清空指定路径下的所有文件及文件夹-同步方法
 * @param {*} path
 */
-export function clearDir(path) {
+export function clearDir(path: fs.PathLike) {
   emptyDir(path);
   rmEmptyDir(path);
 }
@@ -53,19 +54,20 @@ export function clearDir(path) {
 * 递归创建目录 同步方法
 * @param {*} dirname
 */
-const mkdirsSync = (dirname) => {
+const mkdirsSync = (dirname: string) => {
   if (fs.existsSync(dirname)) {
-      return true;
+    return true;
   } else {
-      if (mkdirsSync(path.dirname(dirname))) {
-          fs.mkdirSync(dirname);
-          return true;
-      }
+    if (mkdirsSync(path.dirname(dirname))) {
+        fs.mkdirSync(dirname);
+        return true;
+    }
   }
+  return false;
 }
 
 //写入文件
-export const writeToFilePath = (info, output) => {
+export const writeToFilePath = (info: {}, output: string) => {
   const time = new Date().getTime();
   try {
     const file = path.resolve(output);
@@ -87,9 +89,9 @@ export const writeToFilePath = (info, output) => {
 };
 
 // 根据路径获取文件内容，识别文件内容
-export const getFileContent = (path, config) => {
+export const getFileContent = (path: fs.PathLike, config: TranslateConfig) => {
   return new Promise<Record<string, string>[]>((resolve, reject) => {
-    const result = [];
+    const result: Record<string, string>[] | PromiseLike<Record<string, string>[]> = [];
     const buf = Buffer.alloc(102400000);
     fs.open(path, 'r+', function (err, fd) {
       if (err) {
