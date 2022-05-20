@@ -1,0 +1,38 @@
+export default {
+  'map.carto.tool.title': 'Title',
+  'map.carto.tool.scale': 'Scale',
+  'map.carto.tool.compass': 'Compass',
+  'map.carto.tool.legend': 'Legend',
+  'map.carto.tool.graticules': 'Graticules',
+  'map.carto.tool.legend.local': 'Local',
+  'map.carto.tool.legend.professional': 'Professional',
+  'map.carto.tool.legend.pic': 'Picture',
+  'map.carto.tool.ratio': 'Ratio',
+  'map.carto.tool.ratio.none': 'None',
+  'map.carto.tool.format': 'Format',
+  'map.carto.tool.boundary': 'Boundary',
+  'map.carto.tool.boundary.add': 'Add boundary',
+  'map.carto.tool.boundary.clear': 'Clear boundary',
+  'map.carto.tool.boundary.latError': 'The latitude information is wrong and has been corrected automatically',
+  'map.carto.tool.maxSize': 'Max canvas',
+  'map.carto.tool.export': 'Export',
+  'map.carto.tool.exit': 'Exit Mapping',
+
+  'map.carto.text.titlePlaceholder': 'Enter a map title here...',
+  'map.carto.text.placeholder': 'Enter text here',
+  'map.carto.text.fontFamily': 'Family',
+  'map.carto.text.styleSetting': 'Style setting',
+  'map.carto.text.clickToSetting': 'Click to set the style',
+
+  'map.carto.compass.style': 'Style',
+  'map.carto.compass.size': 'Size',
+  'map.carto.compass.styleSetting': 'Style setting',
+  'map.carto.compass.clickToSetting': 'Click to set the style',
+
+  'map.carto.picLegend.upload': 'Upload image',
+  'map.carto.picLegend.modify': 'Modify',
+  'map.carto.picLegend.remove': 'Remove',
+  'map.carto.picLegend.picClip': 'Image clip',
+
+  'map.carto.proLegend.clickRefresh': 'Click to refresh the legend',
+}

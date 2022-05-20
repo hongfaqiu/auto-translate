@@ -1,8 +1,29 @@
 import { getFileContent, writeToFilePath, } from './localeFs';
 import { getProjectAllTSXFile } from './folder';
 import translate from '@vitalets/google-translate-api';
+import tunnel from 'tunnel';
 import config from '../transConfig'
 import { Languages, Dict, DictItem } from './typings';
+import readline from 'readline';
+ 
+const outStream = process.stdout; 
+
+const rl = readline.createInterface({ 
+  input: process.stdin, 
+  output: outStream 
+}); 
+
+const std = {
+  total: 0,
+  done: 0,
+  leave: 0
+}
+
+const updateStd = () => {
+  readline.cursorTo(outStream, 0, 1); 
+  readline.clearScreenDown(outStream);
+  rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave} \n`);
+}
 
 const convertLang = (taskArray: Dict, options: {
   from?: string;
@@ -10,11 +31,19 @@ const convertLang = (taskArray: Dict, options: {
   path: string;
 }) => {
   const { from, targetLang, path } = options;
-  const promiseArray = taskArray.map((item, index) => {
-    return doTranslate(item, {
+  std.total = taskArray.length;
+  std.done = 0;
+  std.leave = taskArray.length;
+  updateStd();
+  const promiseArray = taskArray.map(async (item, index) => {
+    const res = await doTranslate(item, {
       from,
       to: targetLang
     });
+    std.done += 1;
+    std.leave -= 1;
+    updateStd();
+    return res
   })
   return Promise.all(promiseArray).then(transRes => {
     let outPutFileArrayResult: any[] = [];
@@ -48,15 +77,15 @@ const execFun = async () => {
       res.map(item => {
         result = [...result, ...item]
       })
-      console.log(`>>>>>>正在尝试翻译为${ Object.keys(config.outPutFolder).length }种目标语言，如果翻译失败，请重新执行`)
-      console.log(`>>>>>>报302错误请换IP`)
-      Object.entries(config.outPutFolder).map(([lang, path]) => {
-        convertLang(result, {
+      console.log(`>>>>>>正在尝试将${result.length}条文本翻译为${ Object.keys(config.outPutFolder).length }种目标语言，如果翻译失败，请重新执行`)
+      console.log(`>>>>>>报302错误请使用代理配置`)
+      for (let lang in config.outPutFolder) {
+        await convertLang(result, {
           targetLang: lang as any,
           from: config.from,
-          path
+          path: config.outPutFolder[lang]
         })
-      })
+      }
       
     })
     .catch((err) => {
@@ -71,13 +100,23 @@ const doTranslate = (obj: DictItem, options: translate.IOptions) => {
     translate(obj.value, {
       from,
       to,
-      tld: 'cn'
-    }).then(res => {
+      tld: 'cn',
+    }, config.proxy ? {
+      agent: tunnel.httpsOverHttp({
+        proxy: config.proxy
+      }
+      )
+    } : undefined).then(res => {
       const data = res.text
       resolve({
         key: obj.key,
         value: data
       });
+    }).catch(e => {
+      resolve({
+        key: obj.key,
+        value: '-'
+      })
     })
   })
 }

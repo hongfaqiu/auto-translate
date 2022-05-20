@@ -1,0 +1,15 @@
+export default {
+  'map.layer.add': 'add ',
+  'map.layer.remove': 'remove ',
+  'map.layer.success': ' success',
+  'map.layer.failed': ' failed',
+  'map.layer.empty': 'empty layer',
+  'map.layer.cantFindLayer': 'cant find layer',
+  'map.layer.noMethod': 'no method param!',
+  'map.layer.repeatAdd': 'repeat add',
+  'map.layer.noLayerRemove': 'no layers can remove',
+  'map.layer.successRemove': 'success removed ',
+  'map.layer.layers': ' layers',
+  'map.layer.has': 'has ',
+  'map.layer.layersCantRemove': ' layers cant remove',
+}

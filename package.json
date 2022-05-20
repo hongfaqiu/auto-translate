@@ -5,15 +5,17 @@
   "author": "hongfaqiu",
   "license": "MIT",
   "scripts": {
-    "translate": "ts-node-esm ./src/index.ts"
+    "trans": "ts-node-esm ./src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^17.0.34",
+    "@types/tunnel": "^0.0.3",
     "ts-node": "^10.7.0",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@vitalets/google-translate-api": "^8.0.0"
+    "@vitalets/google-translate-api": "^8.0.0",
+    "tunnel": "^0.0.6"
   }
 }

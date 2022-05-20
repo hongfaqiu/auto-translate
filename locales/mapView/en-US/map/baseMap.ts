@@ -1,0 +1,27 @@
+export default {
+  'map.baseMap.baseMap': 'BaseMap',
+  'map.baseMap.annotations': 'Annotation',
+  'map.baseMap.terrain': 'Terrain',
+  'map.baseMap.noBaseMap': 'None',
+  'map.baseMap.amap': 'Amap',
+  'map.baseMap.tdtImage': 'Tianditu Image',
+  'map.baseMap.tdtVector': 'Tianditu Vector',
+  'map.baseMap.amapVector': 'Amap Vector',
+  'map.baseMap.amapVectorEn': 'Amap Vector En',
+  'map.baseMap.tdtTerrain': 'Tianditu DEM',
+  'map.baseMap.vectorTerrain': 'Vector Terrain',
+  'map.baseMap.esriTerrain': 'ESRI Terrain',
+  'map.baseMap.esriWorldTerrain': 'ESRI Global Terrain',
+  'map.baseMap.esri': 'ESRI',
+
+  'map.baseMap.annotation.none': 'None',
+  'map.baseMap.annotation.amap': 'Amap',
+  'map.baseMap.annotation.tdt': 'Tianditu',
+  'map.baseMap.annotation.tdtEn': 'Tianditu En',
+
+  'map.baseMap.terrain.none': 'None',
+  'map.baseMap.terrain.cesium': 'Cesium Terrain',
+  'map.baseMap.terrain.whole': 'Global',
+  'map.baseMap.terrain.offshore': 'Offshore',
+  'map.baseMap.terrain.aster': 'ASTER',
+}
