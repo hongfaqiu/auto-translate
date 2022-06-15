@@ -29,9 +29,10 @@ const updateStd = () => {
   readline.cursorTo(outStream, 0, 1); 
   readline.clearScreenDown(outStream);
   rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave}, 失败: ${std.error.length} \n`);
+  if(std.leave === 0) rl.close()
 }
 
-const convertLang = (taskArray: Dict, options: {
+const convertLang = async (taskArray: Dict, options: {
   from?: string;
   targetLang: Languages;
   path: string;
@@ -39,11 +40,24 @@ const convertLang = (taskArray: Dict, options: {
   const { from, targetLang, path } = options;
   std.done = 0;
   updateStd();
-  const translated: Dict = taskArray.map(item => ({
+  const oldTranslated = await getFileContent(path)
+  const oldTranslatedObj = Dict2Object(oldTranslated)
+
+  const translated: Dict =taskArray.map(item => ({
     key: item.key,
-    value: config.defaultValue ?? '-'
+    value: oldTranslatedObj[item.key] ?? config.defaultValue ?? '-'
   }))
+
+  const translatedObj = Dict2Object(translated)
+
   return taskArray.map(async (item, index) => {
+    if (translatedObj[item.key] !== config.defaultValue && translatedObj[item.key] !== '-') {
+      std.done += 1;
+      std.leave -= 1;
+      updateStd();
+      return translated[index]
+    }
+
     return doTranslate(item, {
       from,
       to: targetLang
@@ -58,14 +72,14 @@ const convertLang = (taskArray: Dict, options: {
       return res
     }).catch(e => {
       console.log('失败: ', item.key)
-      std.leave -= 1;
+      updateStd();
       std.error.push(item)
       return null
     })
   })
 }
 
-const Dict2File = (dict: Dict, path: string, ts = true) => {
+const Dict2Object = (dict: Dict) => {
   let outPutFileArrayResult: any[] = [];
   dict.forEach(item => {
     outPutFileArrayResult = [...outPutFileArrayResult, {
@@ -79,6 +93,11 @@ const Dict2File = (dict: Dict, path: string, ts = true) => {
       ...item
     }
   })
+  return outPutFileObjectResult
+}
+
+const Dict2File = (dict: Dict, path: string, ts = true) => {
+  const outPutFileObjectResult = Dict2Object(dict)
   writeToFilePath(outPutFileObjectResult, path, ts);
 }
 
@@ -101,13 +120,13 @@ const execFun = async () => {
       if (config.outPutOrignPath) Dict2File(result, config.outPutOrignPath, false)
       std.total = result.length * Object.keys(config.outPutFolder).length
       std.leave = std.total;
-      for (let lang in config.outPutFolder) {
+      Object.entries(config.outPutFolder).map(([lang, path]) => {
         convertLang(result, {
           targetLang: lang as any,
           from: config.from,
-          path: config.outPutFolder[lang]
+          path
         })
-      }
+      })
       
     })
     .catch((err) => {
@@ -122,7 +141,7 @@ const doTranslate = (obj: DictItem, options: translate.IOptions) => {
     translate(obj.value, {
       from,
       to,
-      tld: 'cn',
+      tld: 'com',
     }, config.proxy ? {
       agent: tunnel.httpsOverHttp({
         proxy: config.proxy

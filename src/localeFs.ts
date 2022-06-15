@@ -91,7 +91,7 @@ export const writeToFilePath = (info: {}, output: string, ts = false) => {
 };
 
 // 根据路径获取文件内容，识别文件内容
-export const getFileContent = (path: fs.PathLike, config: TranslateConfig) => {
+export const getFileContent = (path: fs.PathLike, config?: TranslateConfig) => {
   return new Promise<Dict>((resolve, reject) => {
     const result: Dict | PromiseLike<Dict> = [];
     const buf = Buffer.alloc(102400000);
