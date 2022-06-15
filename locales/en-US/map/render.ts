@@ -3,6 +3,9 @@ export default {
 
   'map.render.cog.threeBand': 'Three band',
   'map.render.cog.singleBand': 'Single band',
+  'map.render.cog.colorBarType': 'ColorBar type',
+  'map.render.cog.public': 'Public',
+  'map.render.cog.private': 'Private',
   'map.render.cog.colorBarNotFound': 'ColorBar not found',
   'map.render.cog.bandSetting': 'Band setting',
   'map.render.cog.selectBand': 'Band',
@@ -16,6 +19,7 @@ export default {
   'map.render.cog.valueRange': 'Range',
 
   'map.render.cog.colorLack': 'Number of colors less than 2',
+  'map.render.cog.needMinValue': 'Please add min value color',
   'map.render.cog.createSuccess': 'Style created successfully',
   'map.render.cog.updateSuccess': 'Style updated successfully',
   'map.render.cog.createFailed': 'Style created Failed',

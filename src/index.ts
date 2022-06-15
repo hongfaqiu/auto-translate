@@ -13,16 +13,24 @@ const rl = readline.createInterface({
   output: outStream 
 }); 
 
-const std = {
+const std: {
+  total: number
+  done: number
+  leave: number
+  error: Dict
+  now?: DictItem
+} = {
   total: 0,
   done: 0,
-  leave: 0
+  leave: 0,
+  error: [],
+  now: undefined
 }
 
 const updateStd = () => {
   readline.cursorTo(outStream, 0, 1); 
   readline.clearScreenDown(outStream);
-  rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave} \n`);
+  rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave}, 失败: ${std.error.length}, 当前: ${std.now?.value} \n`);
 }
 
 const convertLang = (taskArray: Dict, options: {
@@ -31,36 +39,49 @@ const convertLang = (taskArray: Dict, options: {
   path: string;
 }) => {
   const { from, targetLang, path } = options;
-  std.total = taskArray.length;
   std.done = 0;
-  std.leave = taskArray.length;
   updateStd();
-  const promiseArray = taskArray.map(async (item, index) => {
+  const translated: Dict = taskArray.map(item => ({
+    key: item.key,
+    value: config.defaultValue ?? '-'
+  }))
+  taskArray.map(async (item, index) => {
     const res = await doTranslate(item, {
       from,
       to: targetLang
-    });
-    std.done += 1;
+    }).then(res => {
+      std.done += 1;
+      return res
+    }).catch(e => {
+      std.error.push(item)
+      return null
+    })
     std.leave -= 1;
+    std.now = item
     updateStd();
+    if (res) {
+      translated[index] = res
+      Dict2File(translated, path)
+    }
     return res
   })
-  return Promise.all(promiseArray).then(transRes => {
-    let outPutFileArrayResult: any[] = [];
-    transRes.forEach(item => {
-      outPutFileArrayResult = [...outPutFileArrayResult, {
-        [item.key]: item.value
-      }]
-    })
-    let outPutFileObjectResult = {};
-    outPutFileArrayResult.forEach(item => {
-      outPutFileObjectResult = {
-        ...outPutFileObjectResult,
-        ...item
-      }
-    })
-    writeToFilePath(outPutFileObjectResult, path);
+}
+
+const Dict2File = (dict: Dict, path: string, ts = true) => {
+  let outPutFileArrayResult: any[] = [];
+  dict.forEach(item => {
+    outPutFileArrayResult = [...outPutFileArrayResult, {
+      [item.key]: item.value
+    }]
   })
+  let outPutFileObjectResult = {};
+  outPutFileArrayResult.forEach(item => {
+    outPutFileObjectResult = {
+      ...outPutFileObjectResult,
+      ...item
+    }
+  })
+  writeToFilePath(outPutFileObjectResult, path, ts);
 }
 
 const execFun = async () => {
@@ -79,8 +100,11 @@ const execFun = async () => {
       })
       console.log(`>>>>>>正在尝试将${result.length}条文本翻译为${ Object.keys(config.outPutFolder).length }种目标语言，如果翻译失败，请重新执行`)
       console.log(`>>>>>>报302错误请使用代理配置`)
+      if (config.outPutOrignPath) Dict2File(result, config.outPutOrignPath, false)
+      std.total = result.length * Object.keys(config.outPutFolder).length
+      std.leave = std.total;
       for (let lang in config.outPutFolder) {
-        await convertLang(result, {
+        convertLang(result, {
           targetLang: lang as any,
           from: config.from,
           path: config.outPutFolder[lang]
@@ -96,7 +120,7 @@ const execFun = async () => {
 // 获取翻译结果
 const doTranslate = (obj: DictItem, options: translate.IOptions) => {
   const { from, to} = options;
-  return new Promise<DictItem>(resolve => {
+  return new Promise<DictItem>((resolve, reject) => {
     translate(obj.value, {
       from,
       to,
@@ -113,10 +137,8 @@ const doTranslate = (obj: DictItem, options: translate.IOptions) => {
         value: data
       });
     }).catch(e => {
-      resolve({
-        key: obj.key,
-        value: '-'
-      })
+      console.error(e)
+      reject(e)
     })
   })
 }

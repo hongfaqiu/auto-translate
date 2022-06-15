@@ -15,6 +15,8 @@ import user from './user';
 import table from './table';
 import statusBar from './statusBar';
 import measure from './measure';
+import layerType from './layerType';
+import fonts from './fonts';
 
 export default {
   ...menu,
@@ -34,4 +36,6 @@ export default {
   ...table,
   ...statusBar,
   ...measure,
+  ...layerType,
+  ...fonts,
 }

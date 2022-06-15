@@ -4,6 +4,7 @@ export default {
   'map.setting.lonLat': 'Lonlat indicator',
   'map.setting.mapStatusBar': 'Map status bar',
   'map.setting.viewerMode': 'Viewer mode switcher',
+  'map.setting.measureTool': 'Measure tool',
   'map.setting.progressBar': 'Request progress bar',
   'map.setting.atomsphere': 'Atomsphere',
   'map.setting.frameRate': 'Frame rate',

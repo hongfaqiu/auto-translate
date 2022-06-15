@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import config from '../transConfig';
 import { Dict, TranslateConfig } from './typings';
 
 /**
@@ -67,16 +68,17 @@ const mkdirsSync = (dirname: string) => {
 }
 
 //写入文件
-export const writeToFilePath = (info: {}, output: string) => {
+export const writeToFilePath = (info: {}, output: string, ts = false) => {
   const time = new Date().getTime();
   try {
     const file = path.resolve(output);
     const dir = file.substring(0, file.lastIndexOf('\\') + 1)
     mkdirsSync(dir)
-    const str = `export default${JSON.stringify(info)}`
-    const result = str.replace(/\",/g, "\",\n  ").replace(/\":\"/g, "\": \"").replace(/t{/g, "t {\n  ").replace(/\"}/g, "\"\n}");
+    const str = ts ? `export default ${JSON.stringify(info)}` : JSON.stringify(info)
+    const result = str.replace(/\",/g, "\",\n  ").replace(/\":\"/g, "\": \"").replace(/{/g, "{\n  ").replace(/\"}/g, "\"\n}");
+    const newResult = config.resultReg ? config.resultReg(result) : result
     // 异步写入数据到文件
-    fs.writeFile(file, result, {
+    fs.writeFile(file, newResult, {
       encoding: 'utf8'
     }, (err) => {
       if (!err) {
