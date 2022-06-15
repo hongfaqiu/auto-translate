@@ -18,19 +18,17 @@ const std: {
   done: number
   leave: number
   error: Dict
-  now?: DictItem
 } = {
   total: 0,
   done: 0,
   leave: 0,
-  error: [],
-  now: undefined
+  error: []
 }
 
 const updateStd = () => {
   readline.cursorTo(outStream, 0, 1); 
   readline.clearScreenDown(outStream);
-  rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave}, 失败: ${std.error.length}, 当前: ${std.now?.value} \n`);
+  rl.write(`共计: ${std.total}, 已完成: ${std.done}, 剩余: ${std.leave}, 失败: ${std.error.length} \n`);
 }
 
 const convertLang = (taskArray: Dict, options: {
@@ -45,25 +43,25 @@ const convertLang = (taskArray: Dict, options: {
     key: item.key,
     value: config.defaultValue ?? '-'
   }))
-  taskArray.map(async (item, index) => {
-    const res = await doTranslate(item, {
+  return taskArray.map(async (item, index) => {
+    return doTranslate(item, {
       from,
       to: targetLang
     }).then(res => {
       std.done += 1;
+      std.leave -= 1;
+      updateStd();
+      if (res) {
+        translated[index] = res
+        Dict2File(translated, path)
+      }
       return res
     }).catch(e => {
+      console.log('失败: ', item.key)
+      std.leave -= 1;
       std.error.push(item)
       return null
     })
-    std.leave -= 1;
-    std.now = item
-    updateStd();
-    if (res) {
-      translated[index] = res
-      Dict2File(translated, path)
-    }
-    return res
   })
 }
 
@@ -128,8 +126,7 @@ const doTranslate = (obj: DictItem, options: translate.IOptions) => {
     }, config.proxy ? {
       agent: tunnel.httpsOverHttp({
         proxy: config.proxy
-      }
-      )
+      })
     } : undefined).then(res => {
       const data = res.text
       resolve({

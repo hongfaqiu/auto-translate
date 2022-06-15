@@ -105,7 +105,7 @@ export const getFileContent = (path: fs.PathLike, config: TranslateConfig) => {
             resolve(result)
           } else {
             const source = buf.slice(0, bytes).toString(); //转为字符串
-            const keyValuesReg = /(.*?):\s+(\'|\")(.*?)(\'|\")/ig;
+            const keyValuesReg = /(.*?):\s*(\'|\")(.*?)(\'|\")/ig;
             let matchs = source.match(keyValuesReg);
             if (matchs) {
               matchs.forEach((item, index) => {
