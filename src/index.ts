@@ -81,6 +81,7 @@ const convertLang = async (taskArray: Dict, options: {
 
 const Dict2Object = (dict: Dict) => {
   let outPutFileArrayResult: any[] = [];
+  dict = dict.sort((a, b) => a.key.localeCompare(b.key))
   dict.forEach(item => {
     outPutFileArrayResult = [...outPutFileArrayResult, {
       [item.key]: item.value
